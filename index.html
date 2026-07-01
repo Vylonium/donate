@@ -54,6 +54,10 @@
     /* Hide Scrollbar for Horizontal List */
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    @keyframes fadeInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .fade-in-up { animation: fadeInUp 0.5s ease-out forwards; }
+    @keyframes pop { 0%{transform:scale(0.8);opacity:0} 70%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
+    .pop-in { animation: pop 0.4s ease-out forwards; }
 
     /* Custom Input Auto-fill style override */
     input:-webkit-autofill,
@@ -402,9 +406,15 @@ function renderXenditForm() {
         localStorage.removeItem('wikybook_tx');
       } catch(e) {}
     }
-    window.addEventListener('DOMContentLoaded', function() {
-      showStrukFromXendit(currentTransaction);
-    });
+    // Render struk setelah DOM siap
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function() {
+        showStrukFromXendit(currentTransaction);
+      });
+    } else {
+      // DOM sudah ready, langsung render
+      setTimeout(function() { showStrukFromXendit(currentTransaction); }, 50);
+    }
   } else if (status === 'failed') {
     window.history.replaceState({}, '', window.location.pathname);
     window.addEventListener('DOMContentLoaded', function() {
@@ -416,12 +426,25 @@ function renderXenditForm() {
 // Tampilkan struk dari data Xendit webhook / redirect
 function showStrukFromXendit(d) {
   if (!d || !d.amount) { return; }
-  const dateStr = new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
-  const donorName = d.name || 'Donatur';
+  const dateStr = new Date().toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' });
+  const donorName = (d.name || 'Donatur').trim();
+  const firstName = donorName.split(' ')[0];
+  const amountFormatted = parseInt(d.amount).toLocaleString('id-ID');
   const app = document.getElementById('app');
   if (!app) return;
-  app.innerHTML = `
-    <div class="flex flex-col min-h-screen bg-gray-50 font-['Inter',sans-serif]">
+
+  // Pesan ucapan acak — hangat dan personal
+  const messages = [
+    `Kamu luar biasa, ${firstName}! Donasi ini benar-benar berarti bagi kami. Dengan dukunganmu, Wikybook bisa terus tumbuh dan berbagi ilmu ke seluruh dunia — gratis, tanpa iklan. Dari lubuk hati kami, terima kasih. 🙏`,
+    `Wah, ${firstName}! Kamu baru saja jadi bagian dari sesuatu yang besar. Setiap rupiah yang kamu berikan membantu ribuan pembaca di seluruh dunia mengakses pengetahuan secara gratis. Ini bukan sekadar donasi — ini investasi untuk masa depan. Terima kasih! ✨`,
+    `${firstName}, kamu tahu nggak? Orang-orang seperti kamu yang membuat Wikybook tetap hidup. Dukunganmu hari ini akan dirasakan oleh banyak orang yang haus akan pengetahuan. Kami sangat bersyukur kamu ada. Terima kasih banyak! 💙`,
+    `Terima kasih, ${firstName}! Donasi kamu sudah kami terima dan langsung kita gunakan untuk menjaga server tetap berjalan dan menambah lebih banyak konten berkualitas. Kamu adalah pahlawan tanpa tanda jasa Wikybook! 🏆`,
+    `${firstName}, ini bukan hal kecil. Dengan memilih berbagi, kamu sudah membantu kami mewujudkan misi menyebarkan pengetahuan tanpa batas ke seluruh penjuru dunia. Terima kasih sudah percaya pada Wikybook! 🌍`,
+  ];
+  const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+
+  app.innerHTML = \`
+    <div class="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-white font-['Inter',sans-serif]">
       <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 px-4 py-3.5 flex items-center justify-between max-w-md mx-auto w-full">
         <div class="flex items-center gap-2.5">
           <div class="w-7 h-7 bg-gray-900 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -429,34 +452,79 @@ function showStrukFromXendit(d) {
           </div>
           <span class="font-bold text-gray-900 text-base tracking-tight">Wikybook</span>
         </div>
+        <span class="text-xs text-green-600 font-semibold bg-green-50 px-2.5 py-1 rounded-full border border-green-100">✓ Lunas</span>
       </header>
-      <main class="flex-grow pt-8 pb-16 fade-in flex flex-col items-center max-w-md mx-auto w-full px-4">
-        <div class="bg-white border border-gray-200 rounded-2xl shadow-sm w-full overflow-hidden relative mb-8">
-          <div class="h-2 w-full bg-gray-900"></div>
-          <div class="p-6 text-center border-b-2 border-dashed border-gray-200">
-            <div class="w-14 h-14 bg-gray-50 text-gray-900 border border-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+
+      <main class="flex-grow pt-6 pb-16 fade-in flex flex-col items-center max-w-md mx-auto w-full px-4">
+
+        <!-- Hero ucapan terima kasih -->
+        <div class="text-center mb-6 px-2">
+          <div class="text-5xl mb-3 animate-bounce">🎉</div>
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-2">Pembayaran Berhasil!</h2>
+          <p class="text-sm text-gray-500">Transaksi kamu sudah dikonfirmasi secara otomatis.</p>
+        </div>
+
+        <!-- Kartu struk -->
+        <div class="bg-white border border-gray-200 rounded-2xl shadow-sm w-full overflow-hidden relative mb-6">
+          <div class="h-1.5 w-full bg-gradient-to-r from-gray-900 via-gray-600 to-gray-400"></div>
+
+          <!-- Nominal -->
+          <div class="p-6 text-center border-b border-dashed border-gray-200">
+            <p class="text-xs text-gray-400 uppercase tracking-widest mb-1">Total Donasi</p>
+            <p class="text-4xl font-extrabold text-gray-900">Rp \${amountFormatted}</p>
+          </div>
+
+          <!-- Detail transaksi -->
+          <div class="px-6 py-5 bg-gray-50 space-y-3 text-sm border-b border-dashed border-gray-200">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-500">Donatur</span>
+              <span class="font-semibold text-gray-900">\${donorName}</span>
             </div>
-            <h2 class="text-xl font-bold text-gray-900 mb-1">Pembayaran Berhasil</h2>
-            <p class="text-3xl font-extrabold text-gray-900 mt-2 mb-2">Rp ${parseInt(d.amount).toLocaleString('id-ID')}</p>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-500">Metode</span>
+              <span class="font-medium text-gray-900">\${d.method || '-'}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-500">Tanggal</span>
+              <span class="font-medium text-gray-900">\${dateStr}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-500">No. Referensi</span>
+              <span class="font-mono text-xs text-gray-700 select-all">\${d.txId || d.invoiceId || '-'}</span>
+            </div>
           </div>
-          <div class="p-6 bg-gray-50 space-y-4 text-sm border-b-2 border-dashed border-gray-200">
-            <div class="flex justify-between items-center"><span class="text-gray-500">Tanggal</span><span class="font-medium text-gray-900">${dateStr}</span></div>
-            <div class="flex justify-between items-center"><span class="text-gray-500">No. Referensi</span><span class="font-mono text-gray-900">${d.txId || d.invoiceId || '-'}</span></div>
-            <div class="flex justify-between items-center"><span class="text-gray-500">Metode</span><span class="font-medium text-gray-900">${d.method || '-'}</span></div>
-            <div class="flex justify-between items-center"><span class="text-gray-500">Nama Donatur</span><span class="font-medium text-gray-900">${donorName}</span></div>
+
+          <!-- Pesan personal -->
+          <div class="p-6 bg-white">
+            <div class="bg-gray-50 rounded-xl p-4 border border-gray-100 mb-5">
+              <p class="text-sm text-gray-700 leading-relaxed">\${randomMsg}</p>
+            </div>
+
+            <!-- Share tombol (opsional) -->
+            <div class="flex gap-3 mb-4">
+              <button onclick="navigator.share ? navigator.share({title:'Saya baru donasi ke Wikybook!', text:'Yuk dukung Wikybook agar tetap gratis dan bebas iklan!', url:'https://donate.hypeemart.my.id'}) : showToast('Salin link: donate.hypeemart.my.id')" 
+                class="flex-1 py-2.5 text-sm border border-gray-200 text-gray-600 font-medium rounded-xl hover:bg-gray-50 transition-all flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                Bagikan
+              </button>
+              <button onclick="window.location.href='/'" 
+                class="flex-1 py-2.5 text-sm bg-gray-900 text-white font-bold rounded-xl hover:bg-gray-800 transition-all">
+                Kembali
+              </button>
+            </div>
+
+            <p class="text-center text-xs text-gray-400">Bukti pembayaran ini bisa disimpan sebagai screenshot.</p>
           </div>
-          <div class="p-8 bg-white text-center">
-            <h3 class="font-bold text-gray-900 mb-3 text-lg">Terima Kasih, ${donorName.split(' ')[0]}! 🎉</h3>
-            <p class="text-sm text-gray-500 leading-relaxed italic mb-8">"Dukungan Anda sangat berharga bagi kelangsungan server Wikybook. Mari terus berbagi wawasan untuk dunia yang lebih baik tanpa batasan."</p>
-            <button onclick="window.location.href='/'" class="w-full py-3 bg-transparent border border-gray-900 text-gray-900 font-bold rounded-xl hover:bg-gray-50 transition-all">
-              Kembali ke Beranda
-            </button>
-          </div>
+        </div>
+
+        <!-- Quote penutup -->
+        <div class="text-center px-4">
+          <p class="text-xs text-gray-400 italic leading-relaxed">"Pengetahuan adalah satu-satunya aset yang bertambah ketika dibagikan."</p>
+          <p class="text-xs text-gray-300 mt-1">— Tim Wikybook</p>
         </div>
       </main>
     </div>
-  `;
+  \`;
 }
 
 function renderView(viewName) {
