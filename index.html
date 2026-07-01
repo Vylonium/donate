@@ -426,105 +426,75 @@ function renderXenditForm() {
 // Tampilkan struk dari data Xendit webhook / redirect
 function showStrukFromXendit(d) {
   if (!d || !d.amount) { return; }
-  const dateStr = new Date().toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' });
-  const donorName = (d.name || 'Donatur').trim();
-  const firstName = donorName.split(' ')[0];
-  const amountFormatted = parseInt(d.amount).toLocaleString('id-ID');
-  const app = document.getElementById('app');
-  if (!app) return;
+  var dateStr = new Date().toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' });
+  var donorName = (d.name || 'Donatur').trim();
+  var firstName = donorName.split(' ')[0];
+  var amountFormatted = parseInt(d.amount).toLocaleString('id-ID');
+  var appEl = document.getElementById('app');
+  if (!appEl) return;
 
-  // Pesan ucapan acak — hangat dan personal
-  const messages = [
-    `Kamu luar biasa, ${firstName}! Donasi ini benar-benar berarti bagi kami. Dengan dukunganmu, Wikybook bisa terus tumbuh dan berbagi ilmu ke seluruh dunia — gratis, tanpa iklan. Dari lubuk hati kami, terima kasih. 🙏`,
-    `Wah, ${firstName}! Kamu baru saja jadi bagian dari sesuatu yang besar. Setiap rupiah yang kamu berikan membantu ribuan pembaca di seluruh dunia mengakses pengetahuan secara gratis. Ini bukan sekadar donasi — ini investasi untuk masa depan. Terima kasih! ✨`,
-    `${firstName}, kamu tahu nggak? Orang-orang seperti kamu yang membuat Wikybook tetap hidup. Dukunganmu hari ini akan dirasakan oleh banyak orang yang haus akan pengetahuan. Kami sangat bersyukur kamu ada. Terima kasih banyak! 💙`,
-    `Terima kasih, ${firstName}! Donasi kamu sudah kami terima dan langsung kita gunakan untuk menjaga server tetap berjalan dan menambah lebih banyak konten berkualitas. Kamu adalah pahlawan tanpa tanda jasa Wikybook! 🏆`,
-    `${firstName}, ini bukan hal kecil. Dengan memilih berbagi, kamu sudah membantu kami mewujudkan misi menyebarkan pengetahuan tanpa batas ke seluruh penjuru dunia. Terima kasih sudah percaya pada Wikybook! 🌍`,
+  var messages = [
+    'Kamu luar biasa, ' + firstName + '! Donasi ini benar-benar berarti bagi kami. Dengan dukunganmu, Wikybook bisa terus tumbuh dan berbagi ilmu ke seluruh dunia — gratis, tanpa iklan. Dari lubuk hati kami, terima kasih. 🙏',
+    'Wah, ' + firstName + '! Kamu baru saja jadi bagian dari sesuatu yang besar. Setiap rupiah yang kamu berikan membantu ribuan pembaca mengakses pengetahuan secara gratis. Ini bukan sekadar donasi — ini investasi untuk masa depan. Terima kasih! ✨',
+    firstName + ', kamu tahu nggak? Orang-orang seperti kamu yang membuat Wikybook tetap hidup. Dukunganmu hari ini akan dirasakan oleh banyak orang yang haus akan pengetahuan. Kami sangat bersyukur kamu ada. Terima kasih banyak! 💙',
+    'Terima kasih, ' + firstName + '! Donasi kamu sudah kami terima. Kamu adalah pahlawan tanpa tanda jasa Wikybook yang membantu kami menjaga server tetap berjalan dan menambah konten berkualitas! 🏆',
+    firstName + ', dengan memilih berbagi, kamu sudah membantu kami mewujudkan misi menyebarkan pengetahuan tanpa batas ke seluruh penjuru dunia. Terima kasih sudah percaya pada Wikybook! 🌍'
   ];
-  const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+  var randomMsg = messages[Math.floor(Math.random() * messages.length)];
 
-  app.innerHTML = \`
-    <div class="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-white font-['Inter',sans-serif]">
-      <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 px-4 py-3.5 flex items-center justify-between max-w-md mx-auto w-full">
-        <div class="flex items-center gap-2.5">
-          <div class="w-7 h-7 bg-gray-900 rounded-lg flex items-center justify-center flex-shrink-0">
-            <span class="text-white font-black text-sm leading-none">W</span>
-          </div>
-          <span class="font-bold text-gray-900 text-base tracking-tight">Wikybook</span>
-        </div>
-        <span class="text-xs text-green-600 font-semibold bg-green-50 px-2.5 py-1 rounded-full border border-green-100">✓ Lunas</span>
-      </header>
+  appEl.innerHTML = '<div class="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-white font-sans">'
+    + '<header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 px-4 py-3.5 flex items-center justify-between max-w-md mx-auto w-full">'
+      + '<div class="flex items-center gap-2.5">'
+        + '<div class="w-7 h-7 bg-gray-900 rounded-lg flex items-center justify-center flex-shrink-0"><span class="text-white font-black text-sm leading-none">W</span></div>'
+        + '<span class="font-bold text-gray-900 text-base tracking-tight">Wikybook</span>'
+      + '</div>'
+      + '<span class="text-xs text-green-600 font-semibold bg-green-50 px-2.5 py-1 rounded-full border border-green-100">✓ Lunas</span>'
+    + '</header>'
 
-      <main class="flex-grow pt-6 pb-16 fade-in flex flex-col items-center max-w-md mx-auto w-full px-4">
+    + '<main class="flex-grow pt-6 pb-16 fade-in flex flex-col items-center max-w-md mx-auto w-full px-4">'
 
-        <!-- Hero ucapan terima kasih -->
-        <div class="text-center mb-6 px-2">
-          <div class="text-5xl mb-3 animate-bounce">🎉</div>
-          <h2 class="text-2xl font-extrabold text-gray-900 mb-2">Pembayaran Berhasil!</h2>
-          <p class="text-sm text-gray-500">Transaksi kamu sudah dikonfirmasi secara otomatis.</p>
-        </div>
+      + '<div class="text-center mb-6 px-2">'
+        + '<div class="text-5xl mb-3" style="animation:bounce 1s infinite">🎉</div>'
+        + '<h2 class="text-2xl font-extrabold text-gray-900 mb-2">Pembayaran Berhasil!</h2>'
+        + '<p class="text-sm text-gray-500">Transaksi kamu sudah dikonfirmasi secara otomatis.</p>'
+      + '</div>'
 
-        <!-- Kartu struk -->
-        <div class="bg-white border border-gray-200 rounded-2xl shadow-sm w-full overflow-hidden relative mb-6">
-          <div class="h-1.5 w-full bg-gradient-to-r from-gray-900 via-gray-600 to-gray-400"></div>
+      + '<div class="bg-white border border-gray-200 rounded-2xl shadow-sm w-full overflow-hidden relative mb-6">'
+        + '<div class="h-1.5 w-full bg-gradient-to-r from-gray-900 via-gray-600 to-gray-400"></div>'
 
-          <!-- Nominal -->
-          <div class="p-6 text-center border-b border-dashed border-gray-200">
-            <p class="text-xs text-gray-400 uppercase tracking-widest mb-1">Total Donasi</p>
-            <p class="text-4xl font-extrabold text-gray-900">Rp \${amountFormatted}</p>
-          </div>
+        + '<div class="p-6 text-center border-b border-dashed border-gray-200">'
+          + '<p class="text-xs text-gray-400 uppercase tracking-widest mb-1">Total Donasi</p>'
+          + '<p class="text-4xl font-extrabold text-gray-900">Rp ' + amountFormatted + '</p>'
+        + '</div>'
 
-          <!-- Detail transaksi -->
-          <div class="px-6 py-5 bg-gray-50 space-y-3 text-sm border-b border-dashed border-gray-200">
-            <div class="flex justify-between items-center">
-              <span class="text-gray-500">Donatur</span>
-              <span class="font-semibold text-gray-900">\${donorName}</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="text-gray-500">Metode</span>
-              <span class="font-medium text-gray-900">\${d.method || '-'}</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="text-gray-500">Tanggal</span>
-              <span class="font-medium text-gray-900">\${dateStr}</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="text-gray-500">No. Referensi</span>
-              <span class="font-mono text-xs text-gray-700 select-all">\${d.txId || d.invoiceId || '-'}</span>
-            </div>
-          </div>
+        + '<div class="px-6 py-5 bg-gray-50 space-y-3 text-sm border-b border-dashed border-gray-200">'
+          + '<div class="flex justify-between items-center"><span class="text-gray-500">Donatur</span><span class="font-semibold text-gray-900">' + donorName + '</span></div>'
+          + '<div class="flex justify-between items-center"><span class="text-gray-500">Metode</span><span class="font-medium text-gray-900">' + (d.method || '-') + '</span></div>'
+          + '<div class="flex justify-between items-center"><span class="text-gray-500">Tanggal</span><span class="font-medium text-gray-900">' + dateStr + '</span></div>'
+          + '<div class="flex justify-between items-center"><span class="text-gray-500">No. Referensi</span><span class="font-mono text-xs text-gray-700 select-all">' + (d.txId || d.invoiceId || '-') + '</span></div>'
+        + '</div>'
 
-          <!-- Pesan personal -->
-          <div class="p-6 bg-white">
-            <div class="bg-gray-50 rounded-xl p-4 border border-gray-100 mb-5">
-              <p class="text-sm text-gray-700 leading-relaxed">\${randomMsg}</p>
-            </div>
+        + '<div class="p-6 bg-white">'
+          + '<div class="bg-gray-50 rounded-xl p-4 border border-gray-100 mb-5">'
+            + '<p class="text-sm text-gray-700 leading-relaxed">' + randomMsg + '</p>'
+          + '</div>'
+          + '<div class="flex gap-3 mb-4">'
+            + '<button onclick="if(navigator.share){navigator.share({title:\'Saya baru donasi ke Wikybook!\',text:\'Yuk dukung Wikybook agar tetap gratis dan bebas iklan!\',url:\'https://donate.hypeemart.my.id\'})}else{showToast(\'Link: donate.hypeemart.my.id\')}" class="flex-1 py-2.5 text-sm border border-gray-200 text-gray-600 font-medium rounded-xl hover:bg-gray-50 transition-all flex items-center justify-center gap-2">'
+              + '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>'
+              + 'Bagikan'
+            + '</button>'
+            + '<button onclick="window.location.href=\'/\'" class="flex-1 py-2.5 text-sm bg-gray-900 text-white font-bold rounded-xl hover:bg-gray-800 transition-all">Kembali</button>'
+          + '</div>'
+          + '<p class="text-center text-xs text-gray-400">Bukti pembayaran ini bisa disimpan sebagai screenshot.</p>'
+        + '</div>'
+      + '</div>'
 
-            <!-- Share tombol (opsional) -->
-            <div class="flex gap-3 mb-4">
-              <button onclick="navigator.share ? navigator.share({title:'Saya baru donasi ke Wikybook!', text:'Yuk dukung Wikybook agar tetap gratis dan bebas iklan!', url:'https://donate.hypeemart.my.id'}) : showToast('Salin link: donate.hypeemart.my.id')" 
-                class="flex-1 py-2.5 text-sm border border-gray-200 text-gray-600 font-medium rounded-xl hover:bg-gray-50 transition-all flex items-center justify-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
-                Bagikan
-              </button>
-              <button onclick="window.location.href='/'" 
-                class="flex-1 py-2.5 text-sm bg-gray-900 text-white font-bold rounded-xl hover:bg-gray-800 transition-all">
-                Kembali
-              </button>
-            </div>
-
-            <p class="text-center text-xs text-gray-400">Bukti pembayaran ini bisa disimpan sebagai screenshot.</p>
-          </div>
-        </div>
-
-        <!-- Quote penutup -->
-        <div class="text-center px-4">
-          <p class="text-xs text-gray-400 italic leading-relaxed">"Pengetahuan adalah satu-satunya aset yang bertambah ketika dibagikan."</p>
-          <p class="text-xs text-gray-300 mt-1">— Tim Wikybook</p>
-        </div>
-      </main>
-    </div>
-  \`;
+      + '<div class="text-center px-4">'
+        + '<p class="text-xs text-gray-400 italic leading-relaxed">"Pengetahuan adalah satu-satunya aset yang bertambah ketika dibagikan."</p>'
+        + '<p class="text-xs text-gray-300 mt-1">— Tim Wikybook</p>'
+      + '</div>'
+    + '</main>'
+  + '</div>';
 }
 
 function renderView(viewName) {
