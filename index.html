@@ -357,7 +357,7 @@ function renderXenditForm() {
         <h3 class="text-lg font-bold text-gray-900">Informasi Donatur</h3>
         <p class="text-xs text-gray-500 mt-1">Isi data Anda untuk pengiriman tanda terima (struk).</p>
       </div>
-              <form onsubmit="handleXenditCheckout(event)" class="space-y-5">
+      <form onsubmit="handleXenditCheckout(event)" class="space-y-5">
         <div>
           <label class="block text-sm font-semibold text-gray-700 mb-1.5 ml-0.5">Nama Lengkap (Opsional)</label>
           <input type="text" id="xenditName" placeholder="Contoh: Hamba Allah" class="w-full border border-gray-300 bg-white rounded-xl py-3 px-4 text-sm outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-colors placeholder-gray-400 shadow-sm">
@@ -366,7 +366,6 @@ function renderXenditForm() {
           <label class="block text-sm font-semibold text-gray-700 mb-1.5 ml-0.5">Alamat Email <span class="text-red-500">*</span></label>
           <input type="email" id="xenditEmail" required placeholder="nama@email.com" class="w-full border border-gray-300 bg-white rounded-xl py-3 px-4 text-sm outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-colors placeholder-gray-400 shadow-sm">
         </div>
-
         <div>
           <label class="block text-sm font-semibold text-gray-700 mb-1.5 ml-0.5">Nominal Donasi (Rp) <span class="text-red-500">*</span></label>
           <div class="relative">
@@ -375,16 +374,9 @@ function renderXenditForm() {
           </div>
           <p class="text-[11px] text-gray-400 mt-1.5 ml-0.5">Minimal donasi Rp 10.000</p>
         </div>
-        </div>
-     
-          <div class="flex-grow border-t border-gray-100"></div>
-        </div>
-      </div>
-
-        <div class="pt-4">
-          <!-- Mengubah tombol menjadi gaya garis pinggir (outline) -->
-          <button type="submit" class="w-full px-8 py-4 bg-transparent border border-gray-900 text-gray-900 font-bold rounded-xl hover:bg-gray-50 transition-all focus:ring-4 focus:ring-gray-100 flex items-center justify-center gap-2 shadow-sm">
-            Lanjutkan Pembayaran
+        <div class="pt-2">
+          <button type="submit" class="w-full px-8 py-4 bg-gray-900 text-white font-bold rounded-xl hover:bg-gray-700 transition-all focus:ring-4 focus:ring-gray-300 flex items-center justify-center gap-2 shadow-sm">
+            Lanjutkan Pembayaran &rarr;
           </button>
         </div>
       </form>
