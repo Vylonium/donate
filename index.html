@@ -396,6 +396,24 @@ function renderXenditForm() {
 // LOGIC & CONTROLLERS
 // =============================================
 
+// Handle redirect kembali dari Xendit (status=success/failed)
+(function checkXenditRedirect() {
+  const params = new URLSearchParams(window.location.search);
+  const status = params.get('status');
+  if (status === 'success') {
+    // Tampilkan halaman sukses setelah redirect dari Xendit
+    window.history.replaceState({}, '', window.location.pathname);
+    window.addEventListener('DOMContentLoaded', function() {
+      simulateSuccessfulXenditPayment();
+    });
+  } else if (status === 'failed') {
+    window.history.replaceState({}, '', window.location.pathname);
+    window.addEventListener('DOMContentLoaded', function() {
+      alert('Pembayaran dibatalkan atau gagal. Silakan coba lagi.');
+    });
+  }
+})();
+
 function renderView(viewName) {
   // Smooth scroll to top
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -440,74 +458,52 @@ function copyToClipboard(text) {
   document.body.removeChild(textArea);
 }
 
-// 2. Simulasi Integrasi Checkout API Xendit
-function handleXenditCheckout(e) {
+// 2. Integrasi Real Checkout API Xendit (Sandbox)
+const BACKEND_URL = 'https://api.base44.com/api/apps/6a3f64fafbc62bb3bdb69596/functions/xenditPayment';
+
+async function handleXenditCheckout(e) {
   e.preventDefault();
 
   const name = document.getElementById('xenditName').value || 'Hamba Allah';
   const email = document.getElementById('xenditEmail').value;
   const amount = document.getElementById('xenditAmount').value;
   const method = paymentMethods.find(m => m.id === selectedPaymentMethod);
-  const txId = 'INV-' + Math.floor(Math.random() * 900000 + 100000);
+  const txId = 'INV-' + Date.now() + '-' + Math.floor(Math.random() * 9000 + 1000);
 
-  // Simpan data transaksi secara lokal untuk halaman struk
   currentTransaction = { name, email, amount, method: method.name, number: method.number, txId };
 
   const btn = e.target.querySelector('button[type="submit"]');
   btn.innerHTML = `<svg class="animate-spin h-5 w-5 text-gray-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span class="text-gray-900 ml-2">Memproses...</span>`;
   btn.disabled = true;
 
-  // Simulasi respons cepat dari API Xendit (Redirecting Screen)
-  setTimeout(() => {
-    app.innerHTML = `
-      ${renderHeader(false)}
-      <main class="flex-grow pt-12 pb-16 fade-in max-w-md mx-auto w-full text-center">
-        <!-- Kepala UI Checkout Xendit -->
-        <div class="bg-white border border-gray-100 rounded-2xl shadow-sm p-6 relative overflow-hidden mb-8">
-          <div class="flex items-center justify-center pb-3 border-b border-gray-200 mb-4">
-            <span class="px-2.5 py-1 bg-gray-100 text-gray-800 text-xs font-bold rounded-full border-gray-200">
-              MENUNGGU PEMBAYARAN
-            </span>
-          </div>
+  try {
+    const res = await fetch(BACKEND_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, amount, paymentMethod: method.id, externalId: txId })
+    });
+    const data = await res.json();
 
-          <p class="text-xs text-gray-400 uppercase tracking-widest mb-1">JUMLAH TAGIHAN</p>
-          <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Rp ${parseInt(amount).toLocaleString('id-ID')}</h2>
+    if (!res.ok || !data.success) {
+      btn.innerHTML = 'Proses Donasi';
+      btn.disabled = false;
+      alert('Gagal membuat invoice: ' + (data.error || 'Coba lagi'));
+      return;
+    }
 
-          <div class="bg-gray-50 rounded-xl p-4 text-left space-y-3 mb-6 text-sm border border-gray-100">
-            <div class="flex justify-between"><span class="text-gray-500">Nama Pendonasi:</span><span class="font-semibold text-gray-800">${name}</span></div>
-            <div class="flex justify-between"><span class="text-gray-500">Email:</span><span class="font-semibold text-gray-800">${email}</span></div>
-            <div class="flex justify-between"><span class="text-gray-500">Metode:</span><span class="font-semibold text-gray-800">${method.name}</span></div>
-            <div class="flex justify-between"><span class="text-gray-500">No. Tagihan:</span><span class="font-mono text-gray-800">${txId}</span></div>
-          </div>
+    // Redirect ke halaman invoice Xendit (sandbox)
+    currentTransaction.invoiceId = data.invoiceId;
+    currentTransaction.invoiceUrl = data.invoiceUrl;
+    window.location.href = data.invoiceUrl;
 
-          <!-- Bagian Instruksi Bayar Instan -->
-          <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 text-left flex gap-3 mb-6">
-            <div class="flex items-center gap-3 justify-between bg-white border border-gray-200 text-gray-900 rounded-xl p-4 w-full">
-              <div class="text-left">
-                <span class="text-[10px] text-gray-500 block uppercase font-bold">Nomor Rekening/Tujuan Anda</span>
-                <span class="text-lg font-mono font-bold tracking-wider">${method.number}</span>
-              </div>
-              <button onclick="copyToClipboard('${method.number}')" class="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
-                ${icons.copy}
-              </button>
-            </div>
-          </div>
-
-          <div class="space-y-3">
-            <!-- Tombol hitam diganti jadi garis outline -->
-            <button onclick="simulateSuccessfulXenditPayment()" class="w-full py-4 bg-transparent border border-gray-900 text-gray-900 font-bold rounded-xl hover:bg-gray-50 transition-all shadow-sm">
-              Selesaikan Pembayaran
-            </button>
-            <button onclick="renderView('landing')" class="w-full py-3 bg-transparent text-gray-500 font-semibold rounded-xl hover:text-gray-900 transition-all text-sm">
-              Kembali ke Beranda
-            </button>
-          </div>
-        </div>
-      </main>
-    `;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, 1200);
+  } catch (err) {
+    btn.innerHTML = 'Proses Donasi';
+    btn.disabled = false;
+    alert('Koneksi gagal. Pastikan internet aktif dan coba lagi.');
+  }
 }
+
+
 
 // Simulasi hasil deteksi instan oleh API & Render Halaman Struk dan Ucapan Terima Kasih
 function simulateSuccessfulXenditPayment() {
