@@ -156,12 +156,12 @@ let currentTransaction = {}; // Menyimpan data donatur sementara
 // - Untuk menambahkan logo asli, cukup isi 'logoUrl' dengan tautan (URL) gambar atau string Base64.
 // - Jika 'logoUrl' kosong (''), maka sistem otomatis menampilkan 'fallbackHtml' (teks desain cantik).
 const paymentMethods = [
-  { id: 'bca', type: 'va', name: 'BCA Virtual Account', logoUrl: 'bca.png', fallbackHtml: '<span class="text-[12px] font-black italic text-[#0066AE] tracking-wide">BCA</span>', number: '8077 1234 5678 9012' },
-  { id: 'mandiri', type: 'va', name: 'Mandiri Virtual Account', logoUrl: 'mandiri.png', fallbackHtml: '<span class="text-[10px] font-extrabold text-[#F2C94C] tracking-tighter">mandiri</span>', number: '8950 8000 1234 5678' },
-  { id: 'bni', type: 'va', name: 'BNI Virtual Account', logoUrl: 'bni.png', fallbackHtml: '<span class="text-[12px] font-black italic text-[#F15A23] tracking-wide">BNI</span>', number: '8001 0009 8765 4321' },
-  { id: 'ovo', type: 'ewallet', name: 'OVO', logoUrl: 'ovo.png', fallbackHtml: '<span class="text-[12px] font-bold text-[#4C2A86] tracking-widest">OVO</span>', number: '0812 3456 7890' },
-  { id: 'dana', type: 'ewallet', name: 'DANA', logoUrl: 'dana.png', fallbackHtml: '<span class="text-[11px] font-bold text-[#118EEA] tracking-widest">DANA</span>', number: '0812 3456 7890' },
-  { id: 'qris', type: 'qris', name: 'QRIS', logoUrl: 'qr.png', fallbackHtml: icons.qr, number: 'Scan QR di layar Anda' }
+  { id: 'BCA', type: 'va', name: 'BCA Virtual Account', logoUrl: 'bca.png', fallbackHtml: '<span class="text-[12px] font-black italic text-[#0066AE] tracking-wide">BCA</span>', number: 'Dibuat otomatis oleh Xendit' },
+  { id: 'MANDIRI', type: 'va', name: 'Mandiri Virtual Account', logoUrl: 'mandiri.png', fallbackHtml: '<span class="text-[10px] font-black text-[#003D79] tracking-tight uppercase">Mandiri</span>', number: 'Dibuat otomatis oleh Xendit' },
+  { id: 'BNI', type: 'va', name: 'BNI Virtual Account', logoUrl: 'bni.png', fallbackHtml: '<span class="text-[12px] font-black italic text-[#F77F00] tracking-wide">BNI</span>', number: 'Dibuat otomatis oleh Xendit' },
+  { id: 'OVO', type: 'ewallet', name: 'OVO', logoUrl: 'ovo.png', fallbackHtml: '<span class="text-[12px] font-bold text-[#4C2A86] tracking-wider">OVO</span>', number: 'Nomor HP terdaftar OVO' },
+  { id: 'DANA', type: 'ewallet', name: 'DANA', logoUrl: 'dana.png', fallbackHtml: '<span class="text-[11px] font-bold text-[#118EEA]">DANA</span>', number: 'Nomor HP terdaftar DANA' },
+  { id: 'QRIS', type: 'qris', name: 'QRIS', logoUrl: 'qr.png', fallbackHtml: icons.qr, number: 'Scan QR di halaman Xendit' }
 ];
 
 // =============================================
@@ -468,6 +468,7 @@ async function handleXenditCheckout(e) {
   const email = document.getElementById('xenditEmail').value;
   const amount = document.getElementById('xenditAmount').value;
   const method = paymentMethods.find(m => m.id === selectedPaymentMethod);
+  if (!method) { alert('Pilih metode pembayaran terlebih dahulu!'); return; }
   const txId = 'INV-' + Date.now() + '-' + Math.floor(Math.random() * 9000 + 1000);
 
   currentTransaction = { name, email, amount, method: method.name, number: method.number, txId };
