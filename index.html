@@ -393,6 +393,25 @@ function renderXenditForm() {
 // =============================================
 
 // Handle redirect kembali dari Xendit (status=success/failed)
+window.addEventListener('DOMContentLoaded', function() {
+  var params = new URLSearchParams(window.location.search);
+  var status = params.get('status');
+  if (status === 'success') {
+    window.history.replaceState({}, '', window.location.pathname);
+    var saved = localStorage.getItem('wikybook_tx');
+    if (saved) {
+      try {
+        currentTransaction = JSON.parse(saved);
+        localStorage.removeItem('wikybook_tx');
+      } catch(e) {}
+    }
+    showStrukFromXendit(currentTransaction);
+  } else if (status === 'failed') {
+    window.history.replaceState({}, '', window.location.pathname);
+    renderView('landing');
+    setTimeout(function() { showToast('Pembayaran dibatalkan atau gagal. Silakan coba lagi.'); }, 300);
+  }
+});
 (function checkXenditRedirect() {
   const params = new URLSearchParams(window.location.search);
   const status = params.get('status');
@@ -766,7 +785,13 @@ function onShareCopiedSuccess(btn, btnIcon) {
 // INIT
 // =============================================
 window.onload = () => {
-  renderView('landing');
+  // Jangan render landing kalau sedang dalam redirect success/failed dari Xendit
+  const _p = new URLSearchParams(window.location.search);
+  const _s = _p.get('status');
+  if (!_s) {
+    renderView('landing');
+  }
+  // Kalau status=success, showStrukFromXendit sudah dipanggil oleh checkXenditRedirect
 };
 </script>
 </body>
