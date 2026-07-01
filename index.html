@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Donasi - Wikybook</title>
+  <meta name="description" content="Dukung keberlanjutan Wikybook melalui donasi.">
+  
+  <!-- Favicon & Open Graph (OG) -->
+  <link rel="icon" href="logo.png" type="image/png">
+  <meta property="og:title" content="Donasi - Wikybook">
+  <meta property="og:description" content="Dukung keberlanjutan Wikybook melalui donasi.">
+  <meta property="og:image" content="logo.png">
+  <meta property="og:url" content="https://donate.hypeemart.my.id">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Donasi - Wikybook">
+  <meta name="twitter:image" content="logo.png">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gray: { 
+              50: '#f9fafb', 100: '#f3f4f6', 200: '#e5e7eb', 300: '#d1d5db', 
+              400: '#9ca3af', 500: '#6b7280', 600: '#4b5563', 700: '#374151', 
+              800: '#1f2937', 900: '#111827' 
+            },
+            blue: { 50: '#eff6ff', 500: '#3b82f6', 600: '#2563eb' }
+          },
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    body { -webkit-tap-highlight-color: transparent; }
+    .fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .fade-out { animation: fadeOut 0.3s ease-in forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-12px); } }
+    
+    /* Custom Scrollbar for clean look */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
+
+    /* Hide Scrollbar for Horizontal List */
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Custom Input Auto-fill style override */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover, 
+    input:-webkit-autofill:focus, 
+    input:-webkit-autofill:active{
+        -webkit-box-shadow: 0 0 0 30px white inset !important;
+    }
+  </style>
+</head>
+
+<body class="bg-[#FAFAFA] text-gray-900 font-sans antialiased min-h-screen flex flex-col selection:bg-gray-200 selection:text-black">
+
+  <!-- Main Application Container -->
+  <div id="app-container" class="flex-grow w-full max-w-2xl mx-auto px-4 sm:px-6 relative flex flex-col min-h-screen">
+    <!-- Konten akan dirender oleh JavaScript di sini -->
+  </div>
+
+  <!-- =============================================
+       MODAL BAGIKAN (SHARE POPUP)
+       ============================================= -->
+  <div id="share-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onclick="closeShareModal()"></div>
+    
+    <!-- Modal Content -->
+    <div class="bg-white rounded-[1.5rem] w-full max-w-md overflow-hidden shadow-2xl relative z-10 border border-gray-100 transform scale-95 opacity-0 transition-all duration-300 ease-out" id="share-modal-card">
+      <!-- Header -->
+      <div class="px-6 pt-6 pb-4 flex items-center justify-between border-b border-gray-50">
+        <h3 class="text-lg font-bold text-gray-900">Bagikan Wikybook</h3>
+        <button onclick="closeShareModal()" class="p-1.5 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="p-6 space-y-6">
+        <p class="text-sm text-gray-500 leading-relaxed">
+          Bantu kami menyebarkan semangat literasi global ini kepada keluarga, teman, atau komunitas Anda. Satu bagikan Anda sangat berarti!
+        </p>
+
+        <!-- Link Copy Area -->
+        <div class="space-y-2">
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider">Tautan Donasi</label>
+          <div class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl p-2 pl-3">
+            <span id="share-url-text" class="text-sm text-gray-600 font-mono truncate flex-grow">https://wikybook.org/donate</span>
+            <button onclick="copyShareLink()" id="btn-copy-modal" class="p-2.5 bg-transparent border border-gray-900 text-gray-900 rounded-lg hover:bg-gray-50 transition-all shadow-sm flex items-center justify-center shrink-0" title="Salin Tautan">
+              <span id="copy-btn-icon">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Social Media Grid -->
+        <div class="space-y-3">
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider">Bagikan Lewat Aplikasi</label>
+          <div class="flex overflow-x-auto gap-3 pb-2 pt-1 snap-x hide-scrollbar" id="social-share-buttons">
+            <!-- Buttons will be rendered with correct URLs -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+// =============================================
+// ICONS (Lucide Style) & ASSETS
+// =============================================
+const icons = {
+  logo: `<svg width="34" height="34" viewBox="0 0 100 100" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><rect x="20" y="44" width="60" height="3"/><polygon points="48,42 20,32 23,27"/><polygon points="49,42 32,19 37,16"/><polygon points="50,42 41,11 46,9"/><polygon points="52,42 80,32 77,27"/><polygon points="51,42 68,19 63,16"/><polygon points="50,42 59,11 54,9"/><rect x="7" y="48" width="26" height="3"/><rect x="39" y="48" width="32" height="3"/><rect x="77" y="48" width="16" height="3"/><polygon points="12,51 28,51 34,98 32,98"/><polygon points="32,98 34,98 50,51 44,51"/><polygon points="50,51 66,51 72,98 70,98"/><polygon points="70,98 72,98 88,51 82,51"/></svg>`,
+  logoLarge: `<svg width="72" height="72" viewBox="0 0 100 100" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><rect x="20" y="44" width="60" height="3"/><polygon points="48,42 20,32 23,27"/><polygon points="49,42 32,19 37,16"/><polygon points="50,42 41,11 46,9"/><polygon points="52,42 80,32 77,27"/><polygon points="51,42 68,19 63,16"/><polygon points="50,42 59,11 54,9"/><rect x="7" y="48" width="26" height="3"/><rect x="39" y="48" width="32" height="3"/><rect x="77" y="48" width="16" height="3"/><polygon points="12,51 28,51 34,98 32,98"/><polygon points="32,98 34,98 50,51 44,51"/><polygon points="50,51 66,51 72,98 70,98"/><polygon points="70,98 72,98 88,51 82,51"/></svg>`,
+  qr: `<svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z" /><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 16.5h.008v.008h-.008v-.008zM16.5 19.5h.008v.008h-.008v-.008zM19.5 16.5h.008v.008h-.008v-.008zM19.5 19.5h.008v.008h-.008v-.008zM13.5 16.5h.008v.008h-.008v-.008zM13.5 19.5h.008v.008h-.008v-.008z" /></svg>`,
+  chevronRight: `<svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>`,
+  arrowLeft: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>`,  
+  copy: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>`,
+  share: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935-2.186 2.25 2.25 0 00-3.935 2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" /></svg>`,
+  download: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>`,
+  google: `<svg class="w-4 h-4" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>`,
+  social: {
+    facebook: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>`,
+    x: `<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 24.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`,
+    instagram: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>`,
+    whatsapp: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.953 2C6.465 2 2 6.462 2 11.95A9.9 9.9 0 003.336 16.9L2 22l5.234-1.37a9.927 9.927 0 004.719 1.189h.005C17.448 21.82 21.91 17.355 21.91 11.87 21.91 9.213 20.875 6.72 18.995 4.84 17.114 2.96 14.62 1.93 11.953 2h.005z" fill="#25D366"/><path d="M17.433 14.156c-.276-.138-1.636-.807-1.89-.899-.25-.091-.434-.137-.614.137-.184.276-.714.9-.877 1.084-.162.183-.326.206-.603.068-1.373-.685-2.262-1.229-3.14-2.738-.236-.407.234-.378.761-1.431.09-.183.045-.344-.023-.483-.068-.137-.614-1.482-.84-2.029-.22-.533-.443-.46-.614-.468h-.52c-.184 0-.486.068-.74.344-.252.276-.966.944-.966 2.306 0 1.361.99 2.677 1.127 2.861.138.183 1.95 2.977 4.723 4.175.66.286 1.173.457 1.571.585.661.21 1.263.18 1.737.109.527-.08 1.636-.668 1.866-1.314.23-.647.23-1.202.16-1.314-.068-.115-.252-.184-.528-.322z" fill="#FFF"/></svg>`,
+    telegram: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.56 8.18l-1.91 9.02c-.14.65-.53.81-1.08.5l-2.91-2.14-1.4 1.35c-.15.15-.28.28-.58.28l.2-2.93 5.35-4.83c.23-.21-.05-.32-.36-.12L9.2 12.82l-2.85-.89c-.62-.19-.63-.62.13-.92l11.13-4.29c.52-.19.97.12.79.89z"/></svg>`,
+    linkedin: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M22.23 0H1.77C.8 0 0 .77 0 1.72v20.56C0 23.23.8 24 1.77 24h20.46c.98 0 1.77-.77 1.77-1.72V1.72C24 .77 23.2 0 22.23 0zM7.12 20.45H3.56V9H7.12v11.45zM5.34 7.43c-1.14 0-2.06-.92-2.06-2.06 0-1.14.92-2.06 2.06-2.06 1.14 0 2.06.92 2.06 2.06 0 1.14-.92 2.06-2.06 2.06zm15.11 13.02h-3.56v-5.6c0-1.34-.03-3.05-1.86-3.05-1.86 0-2.14 1.45-2.14 2.95v5.7H9.33V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29z"/></svg>`
+  }
+};
+
+// =============================================
+// STATE & DATA
+// =============================================
+const app = document.getElementById('app-container');
+let selectedPaymentMethod = null;
+let currentTransaction = {}; // Menyimpan data donatur sementara
+
+// PERHATIAN: 
+// - Untuk menambahkan logo asli, cukup isi 'logoUrl' dengan tautan (URL) gambar atau string Base64.
+// - Jika 'logoUrl' kosong (''), maka sistem otomatis menampilkan 'fallbackHtml' (teks desain cantik).
+const paymentMethods = [
+  { id: 'bca', type: 'va', name: 'BCA Virtual Account', logoUrl: 'bca.png', fallbackHtml: '<span class="text-[12px] font-black italic text-[#0066AE] tracking-wide">BCA</span>', number: '8077 1234 5678 9012' },
+  { id: 'mandiri', type: 'va', name: 'Mandiri Virtual Account', logoUrl: 'mandiri.png', fallbackHtml: '<span class="text-[10px] font-extrabold text-[#F2C94C] tracking-tighter">mandiri</span>', number: '8950 8000 1234 5678' },
+  { id: 'bni', type: 'va', name: 'BNI Virtual Account', logoUrl: 'bni.png', fallbackHtml: '<span class="text-[12px] font-black italic text-[#F15A23] tracking-wide">BNI</span>', number: '8001 0009 8765 4321' },
+  { id: 'ovo', type: 'ewallet', name: 'OVO', logoUrl: 'ovo.png', fallbackHtml: '<span class="text-[12px] font-bold text-[#4C2A86] tracking-widest">OVO</span>', number: '0812 3456 7890' },
+  { id: 'dana', type: 'ewallet', name: 'DANA', logoUrl: 'dana.png', fallbackHtml: '<span class="text-[11px] font-bold text-[#118EEA] tracking-widest">DANA</span>', number: '0812 3456 7890' },
+  { id: 'qris', type: 'qris', name: 'QRIS', logoUrl: 'qr.png', fallbackHtml: icons.qr, number: 'Scan QR di layar Anda' }
+];
+
+// =============================================
+// RENDER FUNCTIONS
+// =============================================
+
+function renderHeader(isMain = true) {
+  if (isMain) {
+    return `
+      <header class="sticky top-0 z-50 bg-[#FAFAFA]/95 backdrop-blur-md border-b border-gray-100 py-3 -mx-4 px-4 sm:-mx-6 sm:px-6">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center justify-start text-gray-900 cursor-pointer" onclick="renderView('landing')">
+            <div class="flex items-center justify-center flex-shrink-0">
+              ${icons.logo}
+            </div>
+            <span class="text-[1.65rem] font-bold tracking-tight text-gray-900 leading-none -ml-1 mt-3">ikybook</span>
+          </div>
+          <button onclick="openShareModal()" class="p-2 text-gray-500 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none" title="Bagikan">
+            ${icons.share}
+          </button>
+        </div>
+      </header>
+    `;
+  } else {
+    return `
+      <header class="sticky top-0 z-50 bg-[#FAFAFA]/95 backdrop-blur-md border-b border-gray-100 py-4 -mx-4 px-4 sm:-mx-6 sm:px-6">
+        <div class="flex items-center justify-between">
+          <button onclick="renderView('payment-methods')" class="p-2 -ml-2 text-gray-500 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none flex items-center gap-1">
+            ${icons.arrowLeft}
+          </button>
+          <span class="text-base font-bold text-gray-900">Pembayaran</span>
+          <div class="w-10"></div> <!-- Spacer for perfect centering -->
+        </div>
+      </header>
+    `;
+  }
+}
+
+function renderFooter() {
+  return `
+    <footer class="py-8 mt-auto border-t border-gray-100 flex flex-col items-center">
+      <div class="flex items-center justify-center gap-6 mb-4">
+          <a href="#" class="text-gray-400 hover:text-[#1877F2] transition-colors" title="Facebook">${icons.social.facebook}</a>
+          <a href="#" class="text-gray-400 hover:text-[#000000] transition-colors" title="X (Twitter)">${icons.social.x}</a>
+          <a href="#" class="text-gray-400 hover:text-[#E4405F] transition-colors" title="Instagram">${icons.social.instagram}</a>
+      </div>
+      <p class="text-xs text-gray-400 text-center leading-relaxed">
+        &copy; 2026 Wikybook. Seluruh hak cipta dilindungi.<br/>
+        Terima kasih atas kontribusi Anda membangun literasi dunia.
+      </p>
+    </footer>
+  `;
+}
+
+// 1. Landing View
+function viewLanding() {
+  return `
+    ${renderHeader(true)}
+    <main class="flex-grow pt-12 pb-16 fade-in flex flex-col items-center text-center">
+      <div class="text-gray-900 mb-6 drop-shadow-sm">
+        ${icons.logoLarge}
+      </div>
+      
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-5 tracking-tight leading-tight">
+        Dukung <span class="text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-500">Wikybook</span>
+      </h1>
+      
+      <p class="text-gray-500 text-base leading-relaxed mb-10 max-w-lg">
+        Wikybook berkomitmen untuk selalu menjadi ensiklopedia global dan wadah <i>sharing</i> artikel-artikel baru secara <b>gratis</b> tanpa gangguan iklan. Dukungan Anda sangat berarti untuk menjaga kelancaran server dan pengembangan platform ke depannya.
+      </p>
+
+      <div class="w-full max-w-sm space-y-4">
+        <!-- Mengubah tombol Donasi Sekarang dengan gaya garis pinggir (outline) -->
+        <button onclick="renderView('payment-methods')" class="w-full px-8 py-4 bg-transparent border border-gray-900 text-gray-900 font-bold rounded-[1rem] hover:bg-gray-50 transition-all focus:ring-4 focus:ring-gray-100 flex items-center justify-center gap-2">
+          Donasi Sekarang
+        </button>
+        <button onclick="openShareModal()" class="w-full px-8 py-4 bg-transparent text-gray-500 font-semibold rounded-[1rem] hover:bg-gray-100 hover:text-gray-900 transition-all flex items-center justify-center gap-2">
+          ${icons.share}
+          Bagikan ke Teman
+        </button>
+      </div>
+
+      <article class="mt-16 pt-10 border-t border-gray-200 w-full text-left text-gray-600 leading-loose space-y-5 text-sm sm:text-base">
+        <p><strong>Wikybook</strong> hadir sebagai platform ensiklopedia digital terdepan sekaligus ruang interaktif untuk berbagi artikel global. Kami berdedikasi untuk mengumpulkan, menyusun, dan menyajikan informasi dari seluruh penjuru dunia ke dalam satu wadah yang mudah diakses oleh siapa saja, kapan saja, dan di mana saja.</p>
+        <p>Visi utama kami adalah mendemokratisasi akses terhadap pengetahuan. Di era digital yang serba cepat ini, peredaran informasi seringkali terpecah-pecah. Wikybook berupaya menjembatani kesenjangan tersebut dengan menyediakan artikel-artikel mendalam yang dikurasi secara rapi, melingkupi kebudayaan, sains, teknologi, hingga inovasi masa kini lintas negara.</p>
+        <p>Lebih dari sekadar ensiklopedia statis, Wikybook dirancang sebagai komunitas berbagi (<em>sharing</em>) yang dinamis. Pengguna dari berbagai latar belakang dapat membaca, berkolaborasi, dan saling bertukar perspektif melalui artikel global yang disajikan. Semangat berbagi inilah yang membuat basis data kami terus tumbuh, relevan, dan kaya akan sudut pandang yang beragam.</p>
+        <p>Seiring berjalannya waktu, ruang lingkup Wikybook telah bertransformasi sepenuhnya. Kami membuka jendela wawasan seluas-luasnya untuk mengeksplorasi peradaban manusia modern dan berbagai pemikiran revolusioner. Platform ini adalah titik temu bagi para pemikir, pembaca, dan penulis dari seluruh dunia.</p>
+        <p>Kami mengundang Anda untuk terus menjelajahi, belajar, dan tumbuh bersama komunitas kami. Jadikan Wikybook sebagai referensi harian Anda, bagikan wawasan dan artikel menarik kepada khalayak, dan mari bersama-sama membangun perpustakaan pengetahuan global yang inklusif untuk generasi mendatang.</p>
+      </article>
+    </main>
+    ${renderFooter()}
+  `;
+}
+
+// 2. Payment Methods View
+function viewPaymentMethods() {
+  const renderItem = (item) => `
+    <button onclick="selectPayment('${item.id}')" class="w-full flex items-center justify-between p-4 bg-white border border-gray-200 rounded-[1rem] hover:border-gray-900 hover:shadow-sm transition-all text-left group">
+      <div class="flex items-center gap-4">
+        <!-- Wadah Logo: Diubah menjadi bulat dan border dihilangkan -->
+        <div class="w-12 h-12 rounded-full ${item.logoUrl ? 'bg-transparent' : 'bg-gray-50'} flex items-center justify-center shrink-0 overflow-hidden">
+          ${item.logoUrl 
+              ? `<img src="${item.logoUrl}" alt="Logo ${item.name}" class="w-full h-full object-contain" />` 
+              : item.fallbackHtml
+          }
+        </div>
+        <span class="font-semibold text-gray-800">${item.name}</span>
+      </div>
+      ${icons.chevronRight}
+    </button>
+  `;
+
+  const va = paymentMethods.filter(m => m.type === 'va').map(renderItem).join('');
+  const ewallet = paymentMethods.filter(m => m.type === 'ewallet').map(renderItem).join('');
+  const qris = paymentMethods.filter(m => m.type === 'qris').map(renderItem).join('');
+
+  return `
+    <header class="sticky top-0 z-50 bg-[#FAFAFA]/95 backdrop-blur-md border-b border-gray-100 py-4 -mx-4 px-4 sm:-mx-6 sm:px-6">
+      <div class="flex items-center justify-between">
+        <button onclick="renderView('landing')" class="p-2 -ml-2 text-gray-500 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none">
+          ${icons.arrowLeft}
+        </button>
+        <span class="text-base font-bold text-gray-900">Metode Pembayaran</span>
+        <div class="w-10"></div>
+      </div>
+    </header>
+
+    <main class="flex-grow pt-8 pb-16 fade-in max-w-md mx-auto w-full">
+      <div class="space-y-8">
+        
+        <!-- Virtual Account -->
+        <section>
+          <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 ml-1">Transfer Bank (VA)</h3>
+          <div class="space-y-3">${va}</div>
+        </section>
+
+        <!-- E-Wallet -->
+        <section>
+          <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 ml-1">E-Wallet</h3>
+          <div class="space-y-3">${ewallet}</div>
+        </section>
+
+        <!-- QRIS -->
+        <section>
+          <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 ml-1">QRIS</h3>
+          <div class="space-y-3">${qris}</div>
+        </section>
+
+      </div>
+    </main>
+  `;
+}
+
+// 3. Form & Confirmation View
+function viewConfirmation() {
+  const method = paymentMethods.find(m => m.id === selectedPaymentMethod);
+  if (!method) return viewPaymentMethods();
+
+  return `
+    ${renderHeader(false)}
+    <main class="flex-grow pt-8 pb-16 fade-in max-w-md mx-auto w-full">
+      
+      <!-- Detail Metode Pembayaran -->
+      <div class="bg-white border border-gray-200 rounded-[1rem] p-6 mb-8 text-center shadow-sm relative overflow-hidden">
+        <h3 class="text-sm font-medium text-gray-500 mb-1">Pilihan Pembayaran</h3>
+        <p class="text-lg font-bold text-gray-900 mb-4">${method.name}</p>
+        
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-100 flex items-center justify-between">
+          <div class="text-left">
+            <p class="text-xs text-gray-500 mb-0.5">Nomor ${method.type === 'va' ? 'Virtual Account' : 'Tujuan'}</p>
+            <p class="text-xl font-extrabold text-gray-900 tracking-wider">${method.number}</p>
+          </div>
+          <button onclick="copyToClipboard('${method.number}')" class="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-200 rounded-md transition-colors" title="Salin">
+            ${icons.copy}
+          </button>
+        </div>
+        <p class="text-xs text-gray-400 mt-4 text-left leading-relaxed">
+          *Pastikan nama penerima adalah <b>Wikybook Foundation</b> saat melakukan pembayaran.
+        </p>
+      </div>
+
+      ${renderXenditForm()}
+
+    </main>
+  `;
+}
+
+// Sub-render untuk form pengisian data donatur (Merapikan bagian form)
+function renderXenditForm() {
+  return `
+    <div class="bg-white border border-gray-200 rounded-[1rem] p-6 shadow-sm">
+      <div class="mb-5 border-b border-gray-100 pb-4">
+        <h3 class="text-lg font-bold text-gray-900">Informasi Donatur</h3>
+        <p class="text-xs text-gray-500 mt-1">Isi data Anda untuk pengiriman tanda terima (struk).</p>
+      </div>
+              <form onsubmit="handleXenditCheckout(event)" class="space-y-5">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5 ml-0.5">Nama Lengkap (Opsional)</label>
+          <input type="text" id="xenditName" placeholder="Contoh: Hamba Allah" class="w-full border border-gray-300 bg-white rounded-xl py-3 px-4 text-sm outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-colors placeholder-gray-400 shadow-sm">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5 ml-0.5">Alamat Email <span class="text-red-500">*</span></label>
+          <input type="email" id="xenditEmail" required placeholder="nama@email.com" class="w-full border border-gray-300 bg-white rounded-xl py-3 px-4 text-sm outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-colors placeholder-gray-400 shadow-sm">
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5 ml-0.5">Nominal Donasi (Rp) <span class="text-red-500">*</span></label>
+          <div class="relative">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">Rp</span>
+            <input type="number" id="xenditAmount" required min="10000" placeholder="10000" class="w-full border border-gray-300 bg-white rounded-xl py-3 pl-10 pr-4 text-sm outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-colors placeholder-gray-400 shadow-sm">
+          </div>
+          <p class="text-[11px] text-gray-400 mt-1.5 ml-0.5">Minimal donasi Rp 10.000</p>
+        </div>
+        </div>
+     
+          <div class="flex-grow border-t border-gray-100"></div>
+        </div>
+      </div>
+
+        <div class="pt-4">
+          <!-- Mengubah tombol menjadi gaya garis pinggir (outline) -->
+          <button type="submit" class="w-full px-8 py-4 bg-transparent border border-gray-900 text-gray-900 font-bold rounded-xl hover:bg-gray-50 transition-all focus:ring-4 focus:ring-gray-100 flex items-center justify-center gap-2 shadow-sm">
+            Lanjutkan Pembayaran
+          </button>
+        </div>
+      </form>
+    </div>
+  `;
+}
+
+// =============================================
+// LOGIC & CONTROLLERS
+// =============================================
+
+function renderView(viewName) {
+  // Smooth scroll to top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+  if (viewName === 'landing') {
+    app.innerHTML = viewLanding();
+  } else if (viewName === 'payment-methods') {
+    app.innerHTML = viewPaymentMethods();
+  } else if (viewName === 'confirmation') {
+    app.innerHTML = viewConfirmation();
+  }
+}
+
+function selectPayment(id) {
+  selectedPaymentMethod = id;
+  renderView('confirmation');
+}
+
+function copyToClipboard(text) {
+  const cleanText = text.replace(/\s+/g, '');
+  
+  let textArea = document.createElement("textarea");
+  textArea.value = cleanText;
+  
+  textArea.style.position = "fixed";
+  textArea.style.top = "-9999px";
+  textArea.style.left = "-9999px";
+  textArea.style.opacity = "0";
+  
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  
+  try {
+      document.execCommand('copy');
+      showToast('Disalin ke papan klip!');
+  } catch (err) {
+      console.error('Gagal menyalin', err);
+      showToast('Gagal menyalin teks');
+  }
+  
+  document.body.removeChild(textArea);
+}
+
+// 2. Simulasi Integrasi Checkout API Xendit
+function handleXenditCheckout(e) {
+  e.preventDefault();
+
+  const name = document.getElementById('xenditName').value || 'Hamba Allah';
+  const email = document.getElementById('xenditEmail').value;
+  const amount = document.getElementById('xenditAmount').value;
+  const method = paymentMethods.find(m => m.id === selectedPaymentMethod);
+  const txId = 'INV-' + Math.floor(Math.random() * 900000 + 100000);
+
+  // Simpan data transaksi secara lokal untuk halaman struk
+  currentTransaction = { name, email, amount, method: method.name, number: method.number, txId };
+
+  const btn = e.target.querySelector('button[type="submit"]');
+  btn.innerHTML = `<svg class="animate-spin h-5 w-5 text-gray-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span class="text-gray-900 ml-2">Memproses...</span>`;
+  btn.disabled = true;
+
+  // Simulasi respons cepat dari API Xendit (Redirecting Screen)
+  setTimeout(() => {
+    app.innerHTML = `
+      ${renderHeader(false)}
+      <main class="flex-grow pt-12 pb-16 fade-in max-w-md mx-auto w-full text-center">
+        <!-- Kepala UI Checkout Xendit -->
+        <div class="bg-white border border-gray-100 rounded-2xl shadow-sm p-6 relative overflow-hidden mb-8">
+          <div class="flex items-center justify-center pb-3 border-b border-gray-200 mb-4">
+            <span class="px-2.5 py-1 bg-gray-100 text-gray-800 text-xs font-bold rounded-full border-gray-200">
+              MENUNGGU PEMBAYARAN
+            </span>
+          </div>
+
+          <p class="text-xs text-gray-400 uppercase tracking-widest mb-1">JUMLAH TAGIHAN</p>
+          <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Rp ${parseInt(amount).toLocaleString('id-ID')}</h2>
+
+          <div class="bg-gray-50 rounded-xl p-4 text-left space-y-3 mb-6 text-sm border border-gray-100">
+            <div class="flex justify-between"><span class="text-gray-500">Nama Pendonasi:</span><span class="font-semibold text-gray-800">${name}</span></div>
+            <div class="flex justify-between"><span class="text-gray-500">Email:</span><span class="font-semibold text-gray-800">${email}</span></div>
+            <div class="flex justify-between"><span class="text-gray-500">Metode:</span><span class="font-semibold text-gray-800">${method.name}</span></div>
+            <div class="flex justify-between"><span class="text-gray-500">No. Tagihan:</span><span class="font-mono text-gray-800">${txId}</span></div>
+          </div>
+
+          <!-- Bagian Instruksi Bayar Instan -->
+          <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 text-left flex gap-3 mb-6">
+            <div class="flex items-center gap-3 justify-between bg-white border border-gray-200 text-gray-900 rounded-xl p-4 w-full">
+              <div class="text-left">
+                <span class="text-[10px] text-gray-500 block uppercase font-bold">Nomor Rekening/Tujuan Anda</span>
+                <span class="text-lg font-mono font-bold tracking-wider">${method.number}</span>
+              </div>
+              <button onclick="copyToClipboard('${method.number}')" class="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                ${icons.copy}
+              </button>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <!-- Tombol hitam diganti jadi garis outline -->
+            <button onclick="simulateSuccessfulXenditPayment()" class="w-full py-4 bg-transparent border border-gray-900 text-gray-900 font-bold rounded-xl hover:bg-gray-50 transition-all shadow-sm">
+              Selesaikan Pembayaran
+            </button>
+            <button onclick="renderView('landing')" class="w-full py-3 bg-transparent text-gray-500 font-semibold rounded-xl hover:text-gray-900 transition-all text-sm">
+              Kembali ke Beranda
+            </button>
+          </div>
+        </div>
+      </main>
+    `;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, 1200);
+}
+
+// Simulasi hasil deteksi instan oleh API & Render Halaman Struk dan Ucapan Terima Kasih
+function simulateSuccessfulXenditPayment() {
+  const d = currentTransaction;
+  const dateStr = new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+
+  app.innerHTML = `
+    ${renderHeader(true)}
+    <main class="flex-grow pt-8 pb-16 fade-in flex flex-col items-center max-w-md mx-auto w-full px-2">
+      
+      <!-- Struk Wrapper -->
+      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm w-full overflow-hidden relative mb-8">
+        <!-- Top Decor -->
+        <div class="h-2 w-full bg-gray-900"></div>
+        
+        <!-- Header Struk -->
+        <div class="p-6 text-center border-b-2 border-dashed border-gray-200">
+          <div class="w-14 h-14 bg-gray-50 text-gray-900 border border-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+          </div>
+          <h2 class="text-xl font-bold text-gray-900 mb-1">Pembayaran Berhasil</h2>
+          <p class="text-3xl font-extrabold text-gray-900 mt-2 mb-2">Rp ${parseInt(d.amount).toLocaleString('id-ID')}</p>
+        </div>
+
+        <!-- Detail Struk -->
+        <div class="p-6 bg-gray-50 space-y-4 text-sm border-b-2 border-dashed border-gray-200">
+           <div class="flex justify-between items-center"><span class="text-gray-500">Tanggal</span><span class="font-medium text-gray-900">${dateStr}</span></div>
+           <div class="flex justify-between items-center"><span class="text-gray-500">No. Referensi</span><span class="font-mono text-gray-900">${d.txId}</span></div>
+           <div class="flex justify-between items-center"><span class="text-gray-500">Metode</span><span class="font-medium text-gray-900 text-right max-w-[150px] leading-tight">${d.method}</span></div>
+           <div class="flex justify-between items-center"><span class="text-gray-500">Nama Donatur</span><span class="font-medium text-gray-900">${d.name}</span></div>
+        </div>
+
+        <!-- Ucapan Terima Kasih -->
+        <div class="p-8 bg-white text-center">
+           <h3 class="font-bold text-gray-900 mb-3 text-lg">Terima Kasih, ${d.name.split(' ')[0]}! 🎉</h3>
+           <p class="text-sm text-gray-500 leading-relaxed italic mb-8">
+             "Dukungan Anda sangat berharga bagi kelangsungan server Wikybook. Mari terus berbagi wawasan untuk dunia yang lebih baik tanpa batasan."
+           </p>
+
+           <!-- Tombol Unduh / Kembali (Garis Outline) -->
+           <div class="space-y-3">
+             <button onclick="showToast('Mengunduh struk...')" class="w-full py-3.5 bg-transparent border border-gray-900 text-gray-900 font-bold rounded-xl hover:bg-gray-50 transition-all flex justify-center items-center gap-2">
+               ${icons.download} Unduh Struk
+             </button>
+             <button onclick="renderView('landing')" class="w-full py-3 bg-transparent text-gray-500 font-semibold rounded-xl hover:text-gray-900 transition-all text-sm">
+               Kembali ke Beranda
+             </button>
+           </div>
+        </div>
+      </div>
+    </main>
+  `;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showToast(message) {
+  const existing = document.getElementById('toast-msg');
+  if (existing) existing.remove();
+  
+  const toast = document.createElement('div');
+  toast.id = 'toast-msg';
+  toast.className = 'fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-5 py-2.5 rounded-full text-sm font-medium shadow-2xl z-[200] fade-in flex items-center gap-2 border border-gray-800';
+  toast.innerHTML = `<span>${message}</span>`;
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.classList.remove('fade-in');
+    toast.classList.add('fade-out');
+    setTimeout(() => toast.remove(), 300);
+  }, 2500);
+}
+
+// =============================================
+// SHARE POPUP LOGIC
+// =============================================
+function openShareModal() {
+  const shareModal = document.getElementById('share-modal');
+  const shareCard = document.getElementById('share-modal-card');
+  const shareUrlText = document.getElementById('share-url-text');
+  
+  const currentUrl = window.location.href;
+  shareUrlText.innerText = currentUrl;
+
+  const encodedUrl = encodeURIComponent(currentUrl);
+  const encodedText = encodeURIComponent("Mari dukung kelangsungan ensiklopedia digital Wikybook! Bebas iklan untuk semua orang.");
+  
+  const socialGrid = document.getElementById('social-share-buttons');
+  socialGrid.innerHTML = `
+    <a href="https://api.whatsapp.com/send?text=${encodedText}%20${encodedUrl}" target="_blank" class="shrink-0 w-[84px] flex flex-col items-center justify-center p-3 outline-none focus:outline-none transition-all text-emerald-600 gap-2 snap-start">
+      ${icons.social.whatsapp.replace('w-5 h-5', 'w-7 h-7')}
+      <span class="text-[11px] font-bold text-gray-700">WhatsApp</span>
+    </a>
+    <a href="https://t.me/share/url?url=${encodedUrl}&text=${encodedText}" target="_blank" class="shrink-0 w-[84px] flex flex-col items-center justify-center p-3 outline-none focus:outline-none transition-all text-blue-500 gap-2 snap-start">
+      ${icons.social.telegram.replace('w-5 h-5', 'w-7 h-7')}
+      <span class="text-[11px] font-bold text-gray-700">Telegram</span>
+    </a>
+    <a href="https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}" target="_blank" class="shrink-0 w-[84px] flex flex-col items-center justify-center p-3 outline-none focus:outline-none transition-all text-[#1877F2] gap-2 snap-start">
+      ${icons.social.facebook.replace('w-5 h-5', 'w-7 h-7')}
+      <span class="text-[11px] font-bold text-gray-700">Facebook</span>
+    </a>
+    <a href="https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedText}" target="_blank" class="shrink-0 w-[84px] flex flex-col items-center justify-center p-3 outline-none focus:outline-none transition-all text-black gap-2 snap-start">
+      ${icons.social.x.replace('w-4 h-4', 'w-6 h-6')}
+      <span class="text-[11px] font-bold text-gray-700">X (Twitter)</span>
+    </a>
+    <a href="https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}" target="_blank" class="shrink-0 w-[84px] flex flex-col items-center justify-center p-3 outline-none focus:outline-none transition-all text-[#0A66C2] gap-2 snap-start">
+      ${icons.social.linkedin.replace('w-5 h-5', 'w-7 h-7')}
+      <span class="text-[11px] font-bold text-gray-700">LinkedIn</span>
+    </a>
+    <a href="mailto:?subject=Dukung Wikybook&body=${encodedText}%20${encodedUrl}" class="shrink-0 w-[84px] flex flex-col items-center justify-center p-3 outline-none focus:outline-none transition-all text-gray-500 gap-2 snap-start">
+      <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+      </svg>
+      <span class="text-[11px] font-bold text-gray-700">Email</span>
+    </a>
+  `;
+
+  shareModal.classList.remove('hidden');
+  setTimeout(() => {
+    shareCard.classList.remove('scale-95', 'opacity-0');
+    shareCard.classList.add('scale-100', 'opacity-100');
+  }, 10);
+}
+
+function closeShareModal() {
+  const shareModal = document.getElementById('share-modal');
+  const shareCard = document.getElementById('share-modal-card');
+  
+  shareCard.classList.remove('scale-100', 'opacity-100');
+  shareCard.classList.add('scale-95', 'opacity-0');
+  
+  setTimeout(() => {
+    shareModal.classList.add('hidden');
+  }, 200);
+}
+
+function copyShareLink() {
+  const currentUrl = window.location.href;
+  const btn = document.getElementById('btn-copy-modal');
+  const btnIcon = document.getElementById('copy-btn-icon');
+  
+  let textArea = document.createElement("textarea");
+  textArea.value = currentUrl;
+  
+  textArea.style.position = "fixed";
+  textArea.style.top = "-9999px";
+  textArea.style.left = "-9999px";
+  textArea.style.opacity = "0";
+  
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  
+  try {
+    document.execCommand('copy');
+    onShareCopiedSuccess(btn, btnIcon);
+  } catch (err) {
+    console.error('Gagal menyalin', err);
+    showToast('Gagal menyalin tautan');
+  }
+  
+  document.body.removeChild(textArea);
+}
+
+function onShareCopiedSuccess(btn, btnIcon) {
+  btnIcon.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>`;
+  btn.classList.add('bg-gray-100');
+  
+  setTimeout(() => {
+    btnIcon.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>`;
+    btn.classList.remove('bg-gray-100');
+  }, 2000);
+}
+
+// =============================================
+// INIT
+// =============================================
+window.onload = () => {
+  renderView('landing');
+};
+</script>
+</body>
+</html>
