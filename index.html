@@ -459,10 +459,18 @@ function showStrukFromXendit(d) {
   `;
 }
 
-function renderView(viewName) {
+function renderView(viewName, skipPush) {
   // Smooth scroll to top
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  
+
+  if (!skipPush) {
+    const pathMap = { 'landing': '/', 'payment-methods': '/pilih-metode', 'confirmation': '/konfirmasi' };
+    const url = pathMap[viewName] || '/';
+    if (location.pathname !== url) {
+      history.pushState({ view: viewName }, '', url);
+    }
+  }
+
   if (viewName === 'landing') {
     app.innerHTML = viewLanding();
   } else if (viewName === 'payment-methods') {
@@ -725,10 +733,34 @@ function onShareCopiedSuccess(btn, btnIcon) {
 }
 
 // =============================================
+// ROUTER — parse URL saat load & popstate
+// =============================================
+function parseAndRenderPath(skipPush) {
+  const path = location.pathname.replace(/\/+$/, '') || '/';
+  if (path === '/pilih-metode') {
+    renderView('payment-methods', skipPush || true);
+  } else if (path === '/konfirmasi') {
+    renderView('confirmation', skipPush || true);
+  } else {
+    renderView('landing', skipPush || true);
+  }
+}
+
+window.addEventListener('popstate', function(e) {
+  parseAndRenderPath(true);
+});
+
+// =============================================
 // INIT
 // =============================================
 window.onload = () => {
-  renderView('landing');
+  // Handle GitHub Pages SPA redirect
+  var redirect = sessionStorage.getItem('spa_redirect');
+  if (redirect && redirect !== '/') {
+    sessionStorage.removeItem('spa_redirect');
+    history.replaceState(null, '', redirect);
+  }
+  parseAndRenderPath(false);
 };
 </script>
 </body>
