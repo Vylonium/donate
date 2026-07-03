@@ -638,8 +638,8 @@ function renderQrisPending(data) {
     <div class="bg-white border border-gray-200 rounded-[1rem] p-6 shadow-sm text-center">
       <h3 class="text-lg font-bold text-gray-900 mb-1">Scan QRIS</h3>
       <p class="text-sm text-gray-500 mb-5">Gunakan aplikasi e-wallet atau m-banking apa saja</p>
-      <div class="bg-white border-4 border-gray-900 rounded-2xl p-4 mx-auto w-fit mb-5">
-        <canvas id="qris-canvas"></canvas>
+      <div class="bg-white border-4 border-gray-900 rounded-2xl p-4 mx-auto mb-5" style="width: 252px; height: 252px; display: flex; align-items: center; justify-content: center;">
+        <canvas id="qris-canvas" width="220" height="220" class="block mx-auto"></canvas>
       </div>
       <p class="text-2xl font-extrabold text-gray-900 mb-1">Rp ${parseInt(data.amount).toLocaleString('id-ID')}</p>
       <p id="pending-status-text" class="text-sm text-gray-500 flex items-center justify-center gap-2 mt-3">
