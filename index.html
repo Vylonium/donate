@@ -157,12 +157,12 @@ let currentTransaction = {}; // Menyimpan data donatur sementara
 // - Untuk menambahkan logo asli, cukup isi 'logoUrl' dengan tautan (URL) gambar atau string Base64.
 // - Jika 'logoUrl' kosong (''), maka sistem otomatis menampilkan 'fallbackHtml' (teks desain cantik).
 const paymentMethods = [
-  { id: 'BCA', type: 'va', name: 'BCA Virtual Account', logoUrl: 'bca.png', fallbackHtml: '<span class="text-[12px] font-black italic text-[#0066AE] tracking-wide">BCA</span>', number: 'Nomor VA dibuat otomatis' },
-  { id: 'MANDIRI', type: 'va', name: 'Mandiri Virtual Account', logoUrl: 'mandiri.png', fallbackHtml: '<span class="text-[10px] font-black text-[#003D79] tracking-tight uppercase">Mandiri</span>', number: 'Nomor VA dibuat otomatis' },
-  { id: 'BNI', type: 'va', name: 'BNI Virtual Account', logoUrl: 'bni.png', fallbackHtml: '<span class="text-[12px] font-black italic text-[#F77F00] tracking-wide">BNI</span>', number: 'Nomor VA dibuat otomatis' },
-  { id: 'OVO', type: 'ewallet', name: 'OVO', logoUrl: 'ovo.png', fallbackHtml: '<span class="text-[12px] font-bold text-[#4C2A86] tracking-wider">OVO</span>', number: 'Notifikasi otomatis ke HP Anda' },
-  { id: 'DANA', type: 'ewallet', name: 'DANA', logoUrl: 'dana.png', fallbackHtml: '<span class="text-[11px] font-bold text-[#118EEA]">DANA</span>', number: 'Konfirmasi cepat di app DANA' },
-  { id: 'QRIS', type: 'qris', name: 'QRIS', logoUrl: 'qr.png', fallbackHtml: icons.qr, number: 'Scan langsung di halaman ini' }
+  { id: 'BCA', type: 'va', name: 'BCA Virtual Account', logoUrl: 'assets/bca.svg', fallbackHtml: '<span class="text-[12px] font-black italic text-[#0066AE] tracking-wide">BCA</span>', number: 'Nomor VA dibuat otomatis' },
+  { id: 'MANDIRI', type: 'va', name: 'Mandiri Virtual Account', logoUrl: 'assets/mandiri.svg', fallbackHtml: '<span class="text-[10px] font-black text-[#003D79] tracking-tight uppercase">Mandiri</span>', number: 'Nomor VA dibuat otomatis' },
+  { id: 'BNI', type: 'va', name: 'BNI Virtual Account', logoUrl: 'assets/bni.svg', fallbackHtml: '<span class="text-[12px] font-black italic text-[#F77F00] tracking-wide">BNI</span>', number: 'Nomor VA dibuat otomatis' },
+  { id: 'OVO', type: 'ewallet', name: 'OVO', logoUrl: 'assets/ovo.svg', fallbackHtml: '<span class="text-[12px] font-bold text-[#4C2A86] tracking-wider">OVO</span>', number: 'Notifikasi otomatis ke HP Anda' },
+  { id: 'DANA', type: 'ewallet', name: 'DANA', logoUrl: 'assets/dana.png', fallbackHtml: '<span class="text-[11px] font-bold text-[#118EEA]">DANA</span>', number: 'Konfirmasi cepat di app DANA' },
+  { id: 'QRIS', type: 'qris', name: 'QRIS', logoUrl: 'assets/qr.svg', fallbackHtml: icons.qr, number: 'Scan langsung di halaman ini' }
 ];
 
 // =============================================
@@ -522,8 +522,8 @@ function copyToClipboard(text) {
 }
 
 // 2. Integrasi Real Checkout API Xendit (Sandbox)
-const BACKEND_URL = 'https://superagent-bdb69596.base44.app/functions/xenditPayment';
-const CHECK_STATUS_URL = 'https://superagent-bdb69596.base44.app/functions/xenditCheckStatus';
+const BACKEND_URL = 'https://superagent-bdde7934.base44.app/functions/xenditPayment';
+const CHECK_STATUS_URL = 'https://superagent-bdde7934.base44.app/functions/xenditCheckStatus';
 
 async function handleXenditCheckout(e) {
   e.preventDefault();
